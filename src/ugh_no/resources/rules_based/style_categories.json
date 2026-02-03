@@ -1,0 +1,30 @@
+{
+  "style_categories": {
+    "human_conversational": [
+      "plain",
+      "conversational",
+      "respectful",
+      "empathetic"
+    ],
+    "informative": [
+      "educational",
+      "explanatory",
+      "guideline-based"
+    ],
+    "enforcement-oriented": [
+      "policy-based",
+      "warning",
+      "procedural"
+    ],
+    "formal_institutional": [
+      "formal",
+      "official",
+      "administrative"
+    ],
+    "legal_compliance": [
+      "legal",
+      "compliance-focused",
+      "enforcement"
+    ]
+  }
+}

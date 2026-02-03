@@ -1,0 +1,16 @@
+Generate a response to an unsolicited and inappropriate image.
+
+Tone: {tone.value}
+Humor level (0-10): {humour_level}
+Directness (0-10): {directness}
+Length: {length.value}
+Style: {style.value}
+
+Rules:
+- No sexual descriptions
+- No insults or threats
+- Clear boundary
+- PG-13 language
+- Suitable for copy-paste
+
+Return ONLY the response text.

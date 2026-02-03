@@ -1,0 +1,214 @@
+{
+  "rules_responses": [
+    {
+      "tone": "polite",
+      "humour_level": 0,
+      "directness": 0,
+      "length": "short",
+      "style": "casual",
+      "severity_level": "low",
+      "response": "No thank you. Please don\\'t send messages like this.",
+      "language": "en"
+    },
+    {
+      "tone": "polite",
+      "humour_level": 0,
+      "directness": 0,
+      "length": "short",
+      "style": "supportive",
+      "severity_level": "low",
+      "response": "I\\'m not comfortable receiving this.",
+      "language": "en"
+    },
+    {
+      "tone": "polite",
+      "humour_level": 0,
+      "directness": 0,
+      "length": "short",
+      "style": "casual",
+      "severity_level": "low",
+      "response": "Please don\\'t send images like that to me.",
+      "language": "en"
+    },
+    {
+      "tone": "polite",
+      "humour_level": 0,
+      "directness": 0,
+      "length": "short",
+      "style": "casual",
+      "severity_level": "low",
+      "response": "This message is unwanted.",
+      "language": "en"
+    },
+    {
+      "tone": "firm-boundary-setting",
+      "humour_level": 0,
+      "directness": 1,
+      "length": "short",
+      "style": "assertive",
+      "severity_level": "medium",
+      "response": "Do not send this again.",
+      "language": "en"
+    },
+    {
+      "tone": "firm-boundary-setting",
+      "humour_level": 0,
+      "directness": 1,
+      "length": "short",
+      "style": "assertive",
+      "severity_level": "medium",
+      "response": "This is not acceptable. Do not send messages like this.",
+      "language": "en"
+    },
+    {
+      "tone": "warning-consequence-focused",
+      "humour_level": 0,
+      "directness": 2,
+      "length": "short",
+      "style": "stern",
+      "severity_level": "high",
+      "response": "Stop sending messages like this. It\\'s inappropriate.",
+      "language": "en"
+    },
+    {
+      "tone": "warning-consequence-focused",
+      "humour_level": 0,
+      "directness": 2,
+      "length": "short",
+      "style": "cautionary",
+      "severity_level": "high",
+      "response": "Do not send these kinds of images or messages again.",
+      "language": "en"
+    },
+    {
+      "tone": "warning-consequence-focused",
+      "humour_level": 0,
+      "directness": 2,
+      "length": "short",
+      "style": "stern",
+      "severity_level": "high",
+      "response": "This content is not acceptable — please stop.",
+      "language": "en"
+    },
+    {
+      "tone": "authoritative-institutional",
+      "humour_level": 0,
+      "directness": 2,
+      "length": "medium",
+      "style": "official",
+      "severity_level": "high",
+      "response": "This message violates platform rules.",
+      "language": "en"
+    },
+    {
+      "tone": "authoritative-institutional",
+      "humour_level": 0,
+      "directness": 2,
+      "length": "short",
+      "style": "administrative",
+      "severity_level": "high",
+      "response": "Messages like this are usually reported.",
+      "language": "en"
+    },
+    {
+      "tone": "authoritative-institutional",
+      "humour_level": 0,
+      "directness": 2,
+      "length": "short",
+      "style": "policy-Based",
+      "severity_level": "high",
+      "response": "This content isn\\'t allowed on most platforms.",
+      "language": "en"
+    },
+    {
+      "tone": "severe-legal",
+      "humour_level": 0,
+      "directness": 3,
+      "length": "short",
+      "style": "legal",
+      "severity_level": "critical",
+      "response": "Unsolicited images violate platform rules and can result in serious consequences.",
+      "language": "en"
+    },
+    {
+      "tone": "severe-legal",
+      "humour_level": 0,
+      "directness": 3,
+      "length": "short",
+      "style": "zero-Tolerance",
+      "severity_level": "critical",
+      "response": "This behavior is not allowed and may result in account and legal review.",
+      "language": "en"
+    },
+    {
+      "tone": "soft-de-escalation",
+      "humour_level": 0,
+      "directness": 0,
+      "length": "short",
+      "style": "supportive",
+      "severity_level": "low",
+      "response": "I\\'m choosing not to engage with messages like this.",
+      "language": "en"
+    },
+    {
+      "tone": "firm-boundary-setting",
+      "humour_level": 0,
+      "directness": 1,
+      "length": "short",
+      "style": "concise",
+      "severity_level": "medium",
+      "response": "I\\'m setting a boundary here. Do not send this again.",
+      "language": "en"
+    },
+    {
+      "tone": "warning-consequence-focused",
+      "humour_level": 0,
+      "directness": 2,
+      "length": "short",
+      "style": "stern",
+      "severity_level": "high",
+      "response": "If this continues, I will block further messages.",
+      "language": "en"
+    },
+    {
+      "tone": "authoritative-institutional",
+      "humour_level": 0,
+      "directness": 2,
+      "length": "short",
+      "style": "official",
+      "severity_level": "high",
+      "response": "This type of content can trigger escalation beyond the platform.",
+      "language": "en"
+    },
+    {
+      "tone": "severe-legal",
+      "humour_level": 0,
+      "directness": 3,
+      "length": "short",
+      "style": "legal",
+      "severity_level": "critical",
+      "response": "This type of content is prohibited and escalated under safety policies.",
+      "language": "en"
+    },
+    {
+      "tone": "soft-de-escalation",
+      "humour_level": 0,
+      "directness": 0,
+      "length": "short",
+      "style": "polite",
+      "severity_level": "low",
+      "response": "Please respect my boundaries.",
+      "language": "en"
+    },
+    {
+      "tone": "firm-boundary-setting",
+      "humour_level": 0,
+      "directness": 1,
+      "length": "short",
+      "style": "assertive",
+      "severity_level": "medium",
+      "response": "Do not contact me with content like this again.",
+      "language": "en"
+    }
+  ]
+}

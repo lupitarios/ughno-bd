@@ -1,0 +1,155 @@
+{
+
+  "polite_respectful": [
+    "No thank you. Please don’t send messages like this.",
+    "I’m not comfortable receiving this.",
+    "Please don’t send images like that to me.",
+    "This isn’t something I want to receive.",
+    "I’d appreciate it if you didn’t send messages like this."
+  ],
+  "neutral_clear_boundary": [
+    "This message is unwanted.",
+    "Do not send this again.",
+    "Not appropriate.",
+    "Please stop.",
+    "This crosses a boundary."
+  ],
+  "firm_assertive": [
+    "This is not acceptable. Do not send messages like this.",
+    "I am not interested. Stop sending this content.",
+    "This behavior is unwanted. Please stop.",
+    "I’m setting a boundary here. Do not send this again.",
+    "This is inappropriate and unwelcome."
+  ],
+  "deadpan_corporate": [
+    "Thank you for your submission. It has been declined.",
+    "This content does not meet our standards.",
+    "Your message has been reviewed and rejected.",
+    "This request cannot be processed.",
+    "Submission received. Action: denied."
+  ],
+  "light_humor_witty": [
+    "That’s a no from me.",
+    "Not the content I signed up for.",
+    "Wrong format, wrong audience.",
+    "This is not the vibe.",
+    "Hard pass."
+  ],
+  "minimal_one_liners": [
+    "No.",
+    "Unwanted.",
+    "Unsolicited.",
+    "Not appropriate.",
+    "Stop."
+  ],
+  "supportive_but_boundaried": [
+    "I’m choosing not to engage with messages like this.",
+    "I’m setting a boundary for my own comfort.",
+    "This isn’t something I want to interact with.",
+    "Please respect my boundaries.",
+    "This makes me uncomfortable. Please stop."
+  ],
+  "auto_escalation": [
+    "Do not contact me again with this type of message.",
+    "If this continues, I will block further messages.",
+    "This is your warning to stop.",
+    "I’ve asked you not to send this. Do not continue.",
+    "Any further messages like this will be ignored."
+  ],
+  "platform_rules_moderation_awareness": [
+    "This kind of message violates platform rules.",
+    "Messages like this are usually reported.",
+    "This content isn’t allowed on most platforms.",
+    "This type of message often leads to account action.",
+    "This goes against community guidelines."
+  ],
+  "reporting_implied_calm_not_threatening": [
+    "I’m documenting this.",
+    "This message is being noted.",
+    "I won’t engage with content like this.",
+    "This interaction is not going to continue.",
+    "This isn’t something I’ll ignore."
+  ],
+  "final_boundary_consequence": [
+    "Do not send messages like this again.",
+    "Any further messages like this will not be answered.",
+    "This is your notice to stop.",
+    "This is the last time I respond to this kind of message.",
+    "I’m ending this conversation now."
+  ],
+  "social_consequence_framing": [
+    "This reflects poorly on you.",
+    "This isn’t appropriate behavior.",
+    "This kind of message isn’t received the way you think.",
+    "This does not create a good impression.",
+    "This behavior isn’t acceptable."
+  ],
+  "minimal_but_heavy": [
+    "Noted.",
+    "Documented.",
+    "Unacceptable.",
+    "Stop now.",
+    "Final notice."
+  ],
+  "supportive_authority_mental_health_safe": [
+    "I’m setting a firm boundary for my safety.",
+    "I won’t engage with behavior like this.",
+    "This crosses a clear boundary.",
+    "Please respect my boundaries.",
+    "This interaction is not healthy or appropriate."
+  ],
+  "escalation_ready_last_step_before_blocking": [
+    "If this continues, I will disengage completely.",
+    "Further messages like this will be ignored.",
+    "I’m not continuing this interaction.",
+    "This conversation ends here.",
+    "Do not contact me with content like this again."
+  ],
+  "platform_authority_escalation": [
+    "This content violates platform rules and may be escalated according to policy.",
+    "Unsolicited images are a reportable offense and may be reviewed for further action.",
+    "This type of content can trigger escalation beyond the platform.",
+    "Messages like this are handled seriously under platform safety policies.",
+    "This interaction may be reviewed for potential escalation.,"
+  ],
+  "reporting_external_review": [
+    "This message is being reported and reviewed.",
+    "This content is documented and subject to review.",
+    "Unsolicited images are taken seriously and reviewed accordingly.",
+    "This interaction is not private once reported.",
+    "This content may be reviewed beyond moderation."
+  ],
+  "explicit_policy_warning": [
+    "Unsolicited images violate platform rules and can result in serious consequences.",
+    "This behavior is not allowed and may result in account and legal review.",
+    "This type of content is prohibited and escalated under safety policies.",
+    "Sending unsolicited images can lead to permanent consequences.",
+    "This behavior is documented under platform safety standards."
+  ],
+  "corporate_legal_adjacent_tone": [
+    "This content is inappropriate and noted.",
+    "This interaction has been reviewed.",
+    "This message does not meet acceptable standards.",
+    "This communication is not permitted.",
+    "Action is being taken to end this interaction.",
+    "This content violates platform safety rules and is being handled accordingly.",
+    "This message does not comply with acceptable-use standards.",
+    "This interaction has triggered a compliance review.",
+    "This communication is not permitted under platform policy.",
+    "Appropriate action will follow per platform rules."
+  ],
+  "final_warning_with_escalation_language": [
+    "Do not send messages like this again.",
+    "Any further messages of this nature will be escalated.",
+    "This is your notice to stop.",
+    "Further contact of this type will be handled through reporting channels.",
+    "This interaction ends here."
+  ],
+  "minimal_but_chilling": [
+    "This is a reportable offense.",
+    "This violates platform policy.",
+    "Escalation applies.",
+    "This is being reviewed.",
+    "Unacceptable and reportable."
+  ]
+}

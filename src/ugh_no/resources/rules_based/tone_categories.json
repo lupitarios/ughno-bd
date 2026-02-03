@@ -1,0 +1,34 @@
+{
+  "tone_categories": {
+    "soft-de-escalation": [
+      "calm",
+      "neutral",
+      "polite",
+      "supportive",
+      "non-judgmental"
+    ],
+    "firm-boundary-setting": [
+      "firm",
+      "serious",
+      "direct",
+      "assertive"
+    ],
+    "warning-consequence-focused": [
+      "stern",
+      "cautionary",
+      "warning"
+    ],
+    "authoritative-institutional": [
+      "authoritative",
+      "official",
+      "policy-Based",
+      "administrative"
+    ],
+    "severe-legal": [
+      "cold",
+      "legal",
+      "institutional",
+      "zero-Tolerance"
+    ]
+  }
+}
