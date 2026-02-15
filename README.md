@@ -21,4 +21,9 @@ The architecture combines:
 - Python
 - FastApi
 - OpenAPI
+- Postgress
+- Docker
+- SQLAlchemy
 
+> [!NOTE]
+> To avoid local installation from Postgress and configuration, I decided to use the Docker Postgress container.
