@@ -6,10 +6,12 @@ from fastapi import FastAPI, HTTPException, status
 from openai import OpenAI
 from fastapi_versionizer.versionizer import Versionizer, api_version
 
-from src.ugh_no.endpoint.errors.constants import functional_errors
-from src.ugh_no.endpoint.errors.custom_exception import UserException
-from src.ugh_no.endpoint.logic import file_rules_from_json
+from ugh_no.errors.constants import functional_errors
+from ugh_no.errors.custom_exception import UserException
+from ugh_no.service import load_rules_from_json
 from src.ugh_no.model.ugh_model import UghNoRequest, UghNoResponse
+
+logger = logging.getLogger(__name__)
 
 # Get the folder where the current script is located
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,14 +33,14 @@ try:
         content = user_prompt_file.read()
         system_prompt = system_prompt_file.read()
 
-        print(content)
-        print(system_prompt)
+        logger.debug(content)
+        logger.debug(system_prompt)
 except FileNotFoundError as e:
-    print(f"File not found!: {str(e)}")
+    logger.error(f"File not found!: {str(e)}")
 except JSONDecodeError as e:
-    print(f"Invalid JSON format!: {str(e)}")
+    logger.error(f"Invalid JSON format!: {str(e)}")
 except Exception as e:
-    print(f"An error occurred: {str(e)}")
+    logger.error(f"An error occurred: {str(e)}")
 
 app = FastAPI(title="Ugh No Endpoint", version="1.0.0")
 
@@ -47,11 +49,11 @@ app = FastAPI(title="Ugh No Endpoint", version="1.0.0")
 @app.post("/generate-response", response_model=UghNoResponse)
 async def generate_response(request: UghNoRequest):
     # format the loaded `content` string using request attributes (placeholders like {name} in `user_prompt.txt`)
-    logging.info("Request received with headers: ", request.dict())
+    logger.info("Request received with headers: ", request.dict())
     user_prompt = content.format(**request.dict())
 
     if request.instant_mode:
-        logging.info("Instant mode enabled, using fallback response.")
+        logger.info("Instant mode enabled, using fallback response.")
         return fallback_generate_response(request)
 
     try:
@@ -68,38 +70,37 @@ async def generate_response(request: UghNoRequest):
         )
 
     except openai.error.RateLimitError as e:
-        print("Rate limit error:", e)
-        logging.error("Rate limit error ", e)
+        logger.error("Rate limit error ", e)
         # HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=str(e))
         raise UserException(functional_errors.C_TF_0001_RATE_LIMIT_ERROR)
     except openai.error.AuthenticationError as e:
-        print("Authentication error:", e)
+        logger.error("Authentication error:", e)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
     except openai.error.APIConnectionError as e:
         print("Connection error:", e)
-        logging.error(HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)))
+        logger.error(HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)))
         raise UserException(functional_errors.C_TF_0002_GENERAL_API_ERROR)
     except openai.error.Timeout as e:
         print("Timeout error:", e)
-        logging.error(HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail=str(e)))
+        logger.error(HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail=str(e)))
         raise UserException(functional_errors.C_TF_0002_GENERAL_API_ERROR)
     except openai.error.APIError as e:
         print("API error:", e)
-        logging.error(HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(e)))
+        logger.error(HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(e)))
         raise UserException(functional_errors.C_TF_0002_GENERAL_API_ERROR)
     except Exception as e:
-        logging.error("Unexpected error calling OpenAI:", e)
+        logger.error("Unexpected error calling OpenAI:", e)
         raise UserException(functional_errors.C_TF_0002_GENERAL_API_ERROR)
 
     # Validate response structure
     if not completion or not getattr(completion, "choices", None):
-        logging.error("Invalid response from OpenAI:", completion)
-        logging.error(HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Invalid response from OpenAI"))
+        logger.error("Invalid response from OpenAI:", completion)
+        logger.error(HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Invalid response from OpenAI"))
         raise UserException(functional_errors.C_TF_0002_GENERAL_API_ERROR)
 
-    print("OpenAI response: ", completion)
+    logger.debug("OpenAI response: ", completion)
     response = UghNoResponse(response_text=completion.choices[0].message.content.strip())
-    print("Generated response: ", response)
+    logger.debug("Generated response: ", response)
     return response
 
 
@@ -117,7 +118,7 @@ def create_response_object(request: UghNoRequest, response_text: str) -> UghNoRe
 
 def fallback_generate_response(request: UghNoRequest) -> UghNoResponse:
     # Simple fallback logic
-    json_response_random = file_rules_from_json.load_rules_based_file()
+    json_response_random = load_rules_from_json.load_rules_based_file()
     if json_response_random is None:
         return create_response_object(request, "I'm sorry, but I couldn't generate a response at this time.")
     else:

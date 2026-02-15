@@ -1,14 +1,26 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator, Field
 from src.ugh_no.model.ugh_enums import ToneEnum, LengthEnum, StyleEnum, SeverityEnum
 
 
 class BaseUghModel(BaseModel):
     tone: ToneEnum
-    humour_level: int
-    directness: int
+    humour_level: int = Field(..., ge=0, le=10)
+    directness: int = Field(..., ge=0, le=10)
     length: LengthEnum = LengthEnum.short
     style: StyleEnum
     severity_level: SeverityEnum = SeverityEnum.low
+
+    @validator('humour_level')
+    def validate_humour_level(cls, value):
+        if not (0 <= value <= 10):
+            raise ValueError('humour_level must be between 0 and 10')
+        return value
+
+    @validator('directness')
+    def validate_directness(cls, value):
+        if not (0 <= value <= 10):
+            raise ValueError('directness must be between 0 and 10')
+        return value
 
 class UghNoRequest(BaseUghModel):
     instant_mode: bool = True
