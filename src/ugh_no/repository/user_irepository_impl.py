@@ -3,15 +3,16 @@ from typing import List
 
 from src.ugh_no.repository.db.db_models import User
 from src.ugh_no.repository.user_irepository import IUserRepository
-from src.ugh_no.repository.db.db_configuration import db_connection, db_session
+from src.ugh_no.repository.db.db_configuration import DBConfiguration
 
 logger = logging.getLogger(__name__)
 
 class UserRepositoryImpl(IUserRepository):
     def __init__(self):
         # Initialize database connection or any required resources
-        self.db = db_connection()
-        self.session = db_session()
+        db_configuration = DBConfiguration()
+        self.db = db_configuration.db_connection()
+        self.session = db_configuration.db_session()
 
     def get(self, user_id: int) -> User | None:
         # Implement logic to retrieve user data from the database
