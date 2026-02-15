@@ -1,10 +1,10 @@
 from typing import Protocol, List
 
-from src.ugh_no.persistence.domain.user import User
+from src.ugh_no.repository.db.db_models import User
 
 
 class IUserRepository(Protocol):
-    """Interface for a repository that handles user data persistence."""
+    """Interface for a repository that handles user data repository."""
 
     def get(self, user_id: int) -> User:
         """Retrieve user data from the database."""
@@ -24,4 +24,4 @@ class IUserRepository(Protocol):
 
     def update(self, user_id: int, user: User) -> User:
         """Update user data in the database."""
-        raise NotImplementedError("Method 'update' must be implemented by subclasses") 
+        raise NotImplementedError("Method 'update' must be implemented by subclasses")
