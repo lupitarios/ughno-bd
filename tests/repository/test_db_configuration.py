@@ -1,8 +1,5 @@
 # python
-import os
-import types
-import pytest
-from src.ugh_no.repository.db import db_configuration
+from repository.db import db_configuration
 
 
 def setup_module(module):

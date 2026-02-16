@@ -1,6 +1,6 @@
 from typing import Protocol, List
 
-from src.ugh_no.repository.db.db_models import User
+from repository.db.db_models import User
 
 
 class IUserRepository(Protocol):

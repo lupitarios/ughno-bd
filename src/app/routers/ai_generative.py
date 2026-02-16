@@ -2,14 +2,14 @@ import os
 import logging
 import openai
 from json import JSONDecodeError
-from fastapi import FastAPI, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from openai import OpenAI
-from fastapi_versionizer.versionizer import Versionizer, api_version
+from fastapi_versionizer.versionizer import Versionizer
 
-from ugh_no.errors.constants import functional_errors
-from ugh_no.errors.custom_exception import UserException
-from ugh_no.service import load_rules_from_json
-from src.ugh_no.model.ugh_model import UghNoRequest, UghNoResponse
+from errors.constants import functional_errors
+from errors.custom_exception import UserException
+from app.routers.utility import load_rules_from_json
+from app.model.ugh_model import UghNoRequest, UghNoResponse
 
 logger = logging.getLogger(__name__)
 
@@ -42,11 +42,11 @@ except JSONDecodeError as e:
 except Exception as e:
     logger.error(f"An error occurred: {str(e)}")
 
-app = FastAPI(title="Ugh No Endpoint", version="1.0.0")
+router = APIRouter(tags=["AI Generative"])
 
 
-@api_version(1)
-@app.post("/generate-response", response_model=UghNoResponse)
+#@api_version(1)
+@router.post("/generate-response", response_model=UghNoResponse)
 async def generate_response(request: UghNoRequest):
     # format the loaded `content` string using request attributes (placeholders like {name} in `user_prompt.txt`)
     logger.info("Request received with headers: ", request.dict())
@@ -124,10 +124,11 @@ def fallback_generate_response(request: UghNoRequest) -> UghNoResponse:
     else:
         return create_response_object(request, json_response_random.response)
 
-
-versions = Versionizer(app,
+'''
+versions = Versionizer(router,
                        prefix_format="v{major}",
                        semantic_version_format="{major}",
                        latest_prefix="latest",
                        sort_routes=True
                        ).versionize()
+'''

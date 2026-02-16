@@ -1,9 +1,9 @@
 import logging
 from typing import List
 
-from src.ugh_no.repository.db.db_models import User
-from src.ugh_no.repository.user_irepository import IUserRepository
-from src.ugh_no.repository.db.db_configuration import DBConfiguration
+from repository.db.db_models import User
+from repository.user_irepository import IUserRepository
+from repository.db.db_configuration import DBConfiguration
 
 logger = logging.getLogger(__name__)
 
