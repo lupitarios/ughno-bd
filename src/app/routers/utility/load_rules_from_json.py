@@ -4,8 +4,8 @@ import os
 from json import JSONDecodeError
 import random
 
-from app.model.ugh_enums import ToneEnum, LengthEnum, StyleEnum, SeverityEnum
-from app.model.ugh_model import UghNoResponse
+from app.schemas.ugh_enums import ToneEnum, LengthEnum, StyleEnum, SeverityEnum
+from app.schemas.ugh_model import UghNoResponse
 
 logger = logging.getLogger(__name__)
 

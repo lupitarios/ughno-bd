@@ -1,5 +1,5 @@
 from pydantic import BaseModel, validator, Field
-from app.model.ugh_enums import ToneEnum, LengthEnum, StyleEnum, SeverityEnum
+from app.schemas.ugh_enums import ToneEnum, LengthEnum, StyleEnum, SeverityEnum
 
 
 class BaseUghModel(BaseModel):

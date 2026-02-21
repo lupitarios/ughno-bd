@@ -9,13 +9,14 @@ from fastapi_versionizer.versionizer import Versionizer
 from errors.constants import functional_errors
 from errors.custom_exception import UserException
 from app.routers.utility import load_rules_from_json
-from app.model.ugh_model import UghNoRequest, UghNoResponse
+from app.schemas.ugh_model import UghNoRequest, UghNoResponse
 
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # Get the folder where the current script is located
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Go to the model folder relative to this file
+# Go to the schemas folder relative to this file
 MODEL_PATH_USER_PROMPT = os.path.join(BASE_DIR, "..", "resources", "user_prompt.txt")
 MODEL_PATH_SYSTEM_PROMPT = os.path.join(BASE_DIR, "..", "resources", "system_prompt.txt")
 # Normalize the path for Linux
@@ -123,12 +124,3 @@ def fallback_generate_response(request: UghNoRequest) -> UghNoResponse:
         return create_response_object(request, "I'm sorry, but I couldn't generate a response at this time.")
     else:
         return create_response_object(request, json_response_random.response)
-
-'''
-versions = Versionizer(router,
-                       prefix_format="v{major}",
-                       semantic_version_format="{major}",
-                       latest_prefix="latest",
-                       sort_routes=True
-                       ).versionize()
-'''
