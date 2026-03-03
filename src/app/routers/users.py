@@ -3,7 +3,7 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.ugh_user import UghUser, UghCreateUser
+from app.schemas.ugh_user import UghUser, UghCreateUser, UserPwd
 from repository.user_irepository_impl import UserRepositoryImpl
 from services.user_iservice_impl import UserServiceImpl
 
@@ -29,12 +29,12 @@ def get_user(user_id: int)->UghUser:
         raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
 
 @router.post("/users")
-def create_user(request: UghCreateUser)->UghCreateUser:
-    logger.info("Create a new user")
+def create_user(request: UserPwd)->UserPwd:
+    print(f"Create a new user with request: {request}")
     try:
         return user_service.create_user(request)
     except Exception as e:
-        logger.error(f"Error creating user: {e}")
+        print(f"Endpoint Error creating user: {e}")
         raise HTTPException(status_code=400, detail="An Error occurred creating user")
 
 @router.put("/users/{user_id}")

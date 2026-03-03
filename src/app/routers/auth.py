@@ -2,7 +2,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 import jwt
-from click import password_option
 from fastapi import Depends, APIRouter, HTTPException, status, Security
 from fastapi.security import (OAuth2PasswordBearer, OAuth2PasswordRequestForm, SecurityScopes)
 from pydantic import BaseModel, ValidationError

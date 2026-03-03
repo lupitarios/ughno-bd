@@ -24,8 +24,15 @@ class UserRepositoryImpl(IUserRepository):
 
             user_by_id = self.session.query(User).get(user_id)
             self.session.commit()
-            user_converted_found = UghUser(user_id=user_by_id.user_id, name=user_by_id.name, username=user_by_id.username, email=user_by_id.email) if user_by_id else None
-            logger.debug(f"Service user found: {user_converted_found}")
+
+            user_converted_found = UghUser(user_id=user_by_id.user_id,
+                                           name=user_by_id.name,
+                                           username=user_by_id.username,
+                                           email=user_by_id.email,
+                                           disabled=user_by_id.disabled) \
+                if user_by_id else None
+
+            logger.info(f"Service user found: {user_converted_found}")
             return user_converted_found
         except Exception as e:
             self.session.rollback()
@@ -47,7 +54,11 @@ class UserRepositoryImpl(IUserRepository):
             self.session.commit()
             logger.debug("Session committed successfully.")
             list_converted_found = [
-                UghUser(user_id=user.user_id, name=user.name, username=user.username, email=user.email)
+                UghUser(user_id=user.user_id,
+                        name=user.name,
+                        username=user.username,
+                        email=user.email,
+                        disabled=user.disabled)
                 for user in all_users] if all_users else None
             return list_converted_found
         except Exception as e:
@@ -62,16 +73,16 @@ class UserRepositoryImpl(IUserRepository):
         try:
             if not self.session.is_active:
                 self.session = DBConfiguration().get_db_session()
-            logger.info("Saving user:", user)
+            print("Repo Saving user:", user)
             print(user.__repr__())
             self.session.add(user)
             self.session.commit()
-            logger.debug("User saved successfully.")
+            print("User saved successfully.")
         except Exception as e:
             self.session.rollback()
-            logger.error(f"Error saving user, rolling back transaction. {e}")
+            print(f"Error saving user, rolling back transaction. {e}")
         finally:
-            logger.debug("Closing session.")
+            print("Closing session.")
             if self.session.is_active:
                 self.session.close()
 
@@ -106,13 +117,20 @@ class UserRepositoryImpl(IUserRepository):
             if user_to_update:
                 user_to_update.name = user.name
                 user_to_update.email = user.email
+                user_to_update.username = user.username
+                user_to_update.disabled = user.disabled
                 self.session.commit()
                 logger.info(f"User with id {user_id} updated successfully.")
             else:
                 logger.info(f"User with id {user_id} not found.")
                 return None
 
-            user_converted_updated = UghUser(user_id=user_id, name=user.name, username=user.username, email=user.email)
+            user_converted_updated = UghUser(
+                user_id=user_id,
+                name=user.name,
+                username=user.username,
+                email=user.email,
+                disabled=user.disabled)
             logger.debug(f"Service user updated: {user_converted_updated}")
             return user_converted_updated
         except Exception as e:

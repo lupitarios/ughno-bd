@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from app.schemas.ugh_user import UghUser, UghCreateUser
+from app.schemas.ugh_user import UghUser, UghCreateUser, UserPwd
 
 
 class IUserService(Protocol):
@@ -13,7 +13,7 @@ class IUserService(Protocol):
         """Retrieve user data by user ID."""
         raise NotImplementedError
 
-    def create_user(self, user_data: UghCreateUser) -> UghCreateUser | None:
+    def create_user(self, user_data: UserPwd) -> UserPwd | None:
         """Create a new user with the provided data."""
         raise NotImplementedError
 
