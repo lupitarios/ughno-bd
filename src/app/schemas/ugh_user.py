@@ -1,5 +1,8 @@
 from pydantic import BaseModel, EmailStr
 
+class UserPwd(BaseModel):
+    password: str
+
 class UserId(BaseModel):
     user_id: int
 
