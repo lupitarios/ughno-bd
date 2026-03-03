@@ -3,12 +3,13 @@ from typing import Annotated
 
 import jwt
 from click import password_option
-from fastapi import Depends, APIRouter, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from pydantic import BaseModel
+from fastapi import Depends, APIRouter, HTTPException, status, Security
+from fastapi.security import (OAuth2PasswordBearer, OAuth2PasswordRequestForm, SecurityScopes)
+from pydantic import BaseModel, ValidationError
 from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 
+## openssl rand -hex 32
 SECRET_KEY = "4a5c78fc70cb67c1cf41a5ede989f456597696a08bbac56797cd8a0031c32303"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -21,6 +22,13 @@ fake_users_db = {
         "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$wagCPXjifgvUFBzq4hqe3w$CYaIb8sB+wtD+Vu/P4uod1+Qof8h+1g7bbDlBID48Rc",
         "disabled": False,
     },
+    "alice": {
+        "username": "alice",
+        "full_name": "Alice Chains",
+        "email": "alicechains@example.com",
+        "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$g2/AV1zwopqUntPKJavBFw$BwpRGDCyUHLvHICnwijyX8ROGoiUPwNKZ7915MeYfCE",
+        "disabled": True,
+    },
 }
 
 class Token(BaseModel):
@@ -29,6 +37,7 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+    scopes: list[str]  = []
 
 class User(BaseModel):
     username: str
@@ -42,15 +51,13 @@ class UserInDB(User):
 password_hash = PasswordHash.recommended()
 DUMMY_HASH = password_hash.hash("dummypassword")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token",
+                                     scopes={"me": "Read information about the current user.", "items": "Read items."})
 
 router = APIRouter(tags=["security"] )
 
 def verify_password(plain_password, hashed_password):
-    try:
-        return password_hash.verify(plain_password, hashed_password)
-    except Exception:
-        return False
+    return password_hash.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
     return password_hash.hash(password)
@@ -79,12 +86,17 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(security_scopes: SecurityScopes , token: Annotated[str, Depends(oauth2_scheme)]):
+
+    if security_scopes.scopes:
+        authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
+    else:
+        authenticate_value = f"Bearer"
     credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -92,16 +104,25 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
-    except InvalidTokenError:
+        scope: str = payload.get("scope", "")
+        token_scopes = scope.split(" ")
+        token_data = TokenData(scopes=token_scopes , username=username)
+    except (InvalidTokenError, ValidationError):
         raise credentials_exception
 
     user = get_user(fake_users_db, username=token_data.username)
     if user is None:
         raise credentials_exception
+    for scope in security_scopes:
+        if scope not in token_data.scopes:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Not enough permissions",
+                headers={"WWW-Authenticate": authenticate_value},
+            )
     return user
 
-async def get_current_active_user(current_user: Annotated[User, Depends(get_current_user)]):
+async def get_current_active_user(current_user: Annotated[User, Security(get_current_user, scopes=["me"])]):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
@@ -111,15 +132,11 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> T
 
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.username, "scope": " ".join(form_data.scopes)},
+        expires_delta=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer")
 
@@ -128,5 +145,9 @@ async def read_users_me(current_user: Annotated[User, Depends(get_current_active
     return current_user
 
 @router.get("/susers/me/items/")
-async def read_own_items(current_user: Annotated[User, Depends(get_current_active_user)]):
+async def read_own_items(current_user: Annotated[User, Security(get_current_active_user, scopes=["items"])]):
     return [{"item_id": "Foo", "owner": current_user.username}]
+
+@router.get("/susers/status")
+async def read_user_status(current_user: Annotated[User, Depends(get_current_active_user)]):
+    return {"status": "ok"}
