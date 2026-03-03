@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from app.schemas.ugh_user import UghUser
+from app.schemas.ugh_user import UghUserId
 from repository.models.user import User
 from repository.user_irepository import IUserRepository
 from repository.db_configuration import DBConfiguration
@@ -16,7 +16,7 @@ class UserRepositoryImpl(IUserRepository):
         self.db = db_configuration.create_engine()
         self.session = db_configuration.get_db_session()
 
-    def get(self, user_id: int) -> UghUser | None:
+    def get(self, user_id: int) -> UghUserId | None:
         # Implement logic to retrieve user data from the database
         try:
             if not self.session.is_active:
@@ -25,11 +25,11 @@ class UserRepositoryImpl(IUserRepository):
             user_by_id = self.session.query(User).get(user_id)
             self.session.commit()
 
-            user_converted_found = UghUser(user_id=user_by_id.user_id,
-                                           name=user_by_id.name,
-                                           username=user_by_id.username,
-                                           email=user_by_id.email,
-                                           disabled=user_by_id.disabled) \
+            user_converted_found = UghUserId(user_id=user_by_id.user_id,
+                                             name=user_by_id.name,
+                                             username=user_by_id.username,
+                                             email=user_by_id.email,
+                                             disabled=user_by_id.disabled) \
                 if user_by_id else None
 
             logger.info(f"Service user found: {user_converted_found}")
@@ -42,7 +42,7 @@ class UserRepositoryImpl(IUserRepository):
             if self.session.is_active:
                 self.session.close()
 
-    def get_all(self) -> List[UghUser] | None:
+    def get_all(self) -> List[UghUserId] | None:
         # Implement logic to retrieve all user data from the database
         try:
             logger.debug(f"Session active:{self.session.is_active}" )
@@ -54,11 +54,11 @@ class UserRepositoryImpl(IUserRepository):
             self.session.commit()
             logger.debug("Session committed successfully.")
             list_converted_found = [
-                UghUser(user_id=user.user_id,
-                        name=user.name,
-                        username=user.username,
-                        email=user.email,
-                        disabled=user.disabled)
+                UghUserId(user_id=user.user_id,
+                          name=user.name,
+                          username=user.username,
+                          email=user.email,
+                          disabled=user.disabled)
                 for user in all_users] if all_users else None
             return list_converted_found
         except Exception as e:
@@ -106,7 +106,7 @@ class UserRepositoryImpl(IUserRepository):
             if self.session.is_active:
                 self.session.close()
 
-    def update(self, user_id: int, user: User) -> UghUser | None:
+    def update(self, user_id: int, user: User) -> UghUserId | None:
         try:
             if not self.session.is_active:
                 self.session = DBConfiguration().get_db_session()
@@ -125,7 +125,7 @@ class UserRepositoryImpl(IUserRepository):
                 logger.info(f"User with id {user_id} not found.")
                 return None
 
-            user_converted_updated = UghUser(
+            user_converted_updated = UghUserId(
                 user_id=user_id,
                 name=user.name,
                 username=user.username,

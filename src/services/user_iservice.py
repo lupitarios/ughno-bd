@@ -1,15 +1,15 @@
 from typing import Protocol
 
-from app.schemas.ugh_user import UghUser, UghCreateUser, UserPwd
+from app.schemas.ugh_user import UghUserId, UghCreateUser, UserPwd
 
 
 class IUserService(Protocol):
     """Interface for user-related operations."""
-    def get_all_users(self) -> list[UghUser]:
+    def get_all_users(self) -> list[UghUserId]:
         """Retrieve all users."""
         raise NotImplementedError
 
-    def get_user_by_id(self, user_id: int) -> UghUser:
+    def get_user_by_id(self, user_id: int) -> UghUserId:
         """Retrieve user data by user ID."""
         raise NotImplementedError
 

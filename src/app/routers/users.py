@@ -3,7 +3,7 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.ugh_user import UghUser, UghCreateUser, UserPwd
+from app.schemas.ugh_user import UghUserId, UghCreateUser, UserPwd
 from repository.user_irepository_impl import UserRepositoryImpl
 from services.user_iservice_impl import UserServiceImpl
 
@@ -14,12 +14,12 @@ router = APIRouter(tags=["users"] )
 user_service = UserServiceImpl(UserRepositoryImpl())
 
 @router.get("/users")
-def get_users()->list[UghUser] | None:
+def get_users()-> list[UghUserId] | None:
     logger.info('Get All Users')
     return user_service.get_all_users()
 
 @router.get("/users/{user_id}")
-def get_user(user_id: int)->UghUser:
+def get_user(user_id: int)->UghUserId:
     logger.info(f"Get user with id {user_id}")
     user_found = user_service.get_user_by_id(user_id)
     if user_found:
@@ -38,7 +38,7 @@ def create_user(request: UserPwd)->UserPwd:
         raise HTTPException(status_code=400, detail="An Error occurred creating user")
 
 @router.put("/users/{user_id}")
-def update_user(user_id: int, request: UghCreateUser)->UghUser:
+def update_user(user_id: int, request: UghCreateUser)->UghUserId:
     logger.info(f"Update user with id {user_id}")
     print(f"Endpoint Updating user with id {user_id} to new values: {request}")
     try:
