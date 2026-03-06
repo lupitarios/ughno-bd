@@ -1,13 +1,22 @@
 import logging
 from typing import List
 
-from app.schemas.ugh_user import UghUserId
+from app.schemas.ugh_user import UghUserId, UserPwd
 from repository.models.user import User
 from repository.user_irepository import IUserRepository
 from repository.db_configuration import DBConfiguration
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+def map_user_to_ugh_user_id(user: User) -> UghUserId:
+    return UghUserId(
+        user_id=user.user_id,
+        name=user.name,
+        username=user.username,
+        email=user.email,
+        disabled=user.disabled
+    )
 
 class UserRepositoryImpl(IUserRepository):
     def __init__(self):
@@ -16,7 +25,7 @@ class UserRepositoryImpl(IUserRepository):
         self.db = db_configuration.create_engine()
         self.session = db_configuration.get_db_session()
 
-    def get(self, user_id: int) -> UghUserId | None:
+    def get_by_id(self, user_id: int) -> UghUserId | None:
         # Implement logic to retrieve user data from the database
         try:
             if not self.session.is_active:
@@ -25,14 +34,40 @@ class UserRepositoryImpl(IUserRepository):
             user_by_id = self.session.query(User).get(user_id)
             self.session.commit()
 
-            user_converted_found = UghUserId(user_id=user_by_id.user_id,
-                                             name=user_by_id.name,
-                                             username=user_by_id.username,
-                                             email=user_by_id.email,
-                                             disabled=user_by_id.disabled) \
+            user_converted_found = map_user_to_ugh_user_id(user_by_id) \
                 if user_by_id else None
 
             logger.info(f"Service user found: {user_converted_found}")
+            return user_converted_found
+        except Exception as e:
+            self.session.rollback()
+            logger.error(e)
+        finally:
+            logger.debug("Closing session.")
+            if self.session.is_active:
+                self.session.close()
+
+    def get_by_username(self, username: str) -> UserPwd | None:
+        # Implement logic to retrieve user data from the database
+        try:
+            if not self.session.is_active:
+                self.session = DBConfiguration().get_db_session()
+            print("1 Repo get_by_username, username:", username)
+            user_by_username = self.session.query(User).filter_by(username=username).first()
+            print("2 Repo get_by_username, user_by_username:", user_by_username)
+            self.session.commit()
+
+            user_converted_found =  UserPwd(
+                                    user_id=user_by_username.user_id,
+                                    name=user_by_username.name,
+                                    hashed_password=user_by_username.hashed_password,
+                                    username=user_by_username.username,
+                                    email=user_by_username.email,
+                                    disabled=user_by_username.disabled) \
+                if user_by_username else None
+
+            logger.info(f"Service user found: {user_converted_found}")
+            print("Repo get_by_username, user_converted_found:", user_converted_found)
             return user_converted_found
         except Exception as e:
             self.session.rollback()
@@ -54,11 +89,7 @@ class UserRepositoryImpl(IUserRepository):
             self.session.commit()
             logger.debug("Session committed successfully.")
             list_converted_found = [
-                UghUserId(user_id=user.user_id,
-                          name=user.name,
-                          username=user.username,
-                          email=user.email,
-                          disabled=user.disabled)
+                map_user_to_ugh_user_id(user)
                 for user in all_users] if all_users else None
             return list_converted_found
         except Exception as e:

@@ -13,7 +13,7 @@ class UghUserId(UghCreateUser):
     user_id: int
 
     def __str__(self):
-        return f"User(user_id={self.user_id})"
+        return f"User(user_id={self.user_id}, name={self.name}, username='{self.username}', email='{self.email}', disabled={self.disabled})"
 
-class UserPwd(UghCreateUser):
+class UserPwd(UghUserId):
     hashed_password: str

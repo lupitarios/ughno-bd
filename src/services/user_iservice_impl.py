@@ -1,4 +1,12 @@
 import logging
+from typing import Annotated
+
+import jwt
+from fastapi import Depends, HTTPException, status, Security
+from fastapi.security import SecurityScopes
+from jwt.exceptions import InvalidTokenError
+from pydantic import ValidationError
+
 from app import security
 from app.schemas.ugh_user import UghUserId, UghCreateUser, UserPwd
 from repository.models.user import User
@@ -14,9 +22,19 @@ class UserServiceImpl(IUserService):
 
     def get_user_by_id(self, user_id: int) -> UghUserId | None:
         logger.debug(f"Getting user with id: {user_id}")
-        user_found = self.user_repository.get(user_id)
+        user_found = self.user_repository.get_by_id(user_id)
         return UghUserId(user_id=user_found.user_id,
                          name=user_found.name,
+                         username=user_found.username,
+                         email=user_found.email,
+                         disabled=user_found.disabled) if user_found else None
+
+    def get_user_by_username(self, username: str) -> UserPwd | None:
+        logger.debug(f"Getting user with username: {username}")
+        user_found = self.user_repository.get_by_username(username)
+        return UserPwd(user_id=user_found.user_id,
+                         name=user_found.name,
+                         hashed_password=user_found.hashed_password,
                          username=user_found.username,
                          email=user_found.email,
                          disabled=user_found.disabled) if user_found else None

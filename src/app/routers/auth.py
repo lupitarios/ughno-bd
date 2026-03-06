@@ -8,6 +8,8 @@ from pydantic import BaseModel, ValidationError
 from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 
+from app.routers.users import user_service
+
 ## openssl rand -hex 32
 SECRET_KEY = "4a5c78fc70cb67c1cf41a5ede989f456597696a08bbac56797cd8a0031c32303"
 ALGORITHM = "HS256"
@@ -150,3 +152,15 @@ async def read_own_items(current_user: Annotated[User, Security(get_current_acti
 @router.get("/susers/status")
 async def read_user_status(current_user: Annotated[User, Depends(get_current_active_user)]):
     return {"status": "ok"}
+
+@router.delete("/susers/{user_id}", dependencies=[Security(get_current_active_user, scopes=["admin"])])
+def delete_user(user_id: int) -> dict:
+    print(f"Delete user with id {user_id}")
+    print("Endpoint Deleting user with id:", user_id)
+    try:
+        user_service.delete_user(user_id)
+        return {"message": f"User with id {user_id} deleted successfully"}
+    except Exception as e:
+        print(f"Error deleting user: {e}")
+        print("Fnt Error deleting user:", e)
+        raise HTTPException(status_code=400, detail="An Error occurred deleting user")

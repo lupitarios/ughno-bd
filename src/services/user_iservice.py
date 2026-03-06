@@ -1,5 +1,9 @@
-from typing import Protocol
+from typing import Protocol, Annotated
 
+from fastapi import Security, Depends
+from fastapi.security import SecurityScopes
+
+from app import security
 from app.schemas.ugh_user import UghUserId, UghCreateUser, UserPwd
 
 
@@ -10,6 +14,10 @@ class IUserService(Protocol):
         raise NotImplementedError
 
     def get_user_by_id(self, user_id: int) -> UghUserId:
+        """Retrieve user data by user ID."""
+        raise NotImplementedError
+
+    def get_user_by_username(self, username: str) -> UserPwd:
         """Retrieve user data by user ID."""
         raise NotImplementedError
 
