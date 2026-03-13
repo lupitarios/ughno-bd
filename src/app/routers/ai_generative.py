@@ -2,20 +2,21 @@ import os
 import logging
 import openai
 from json import JSONDecodeError
-from fastapi import FastAPI, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from openai import OpenAI
-from fastapi_versionizer.versionizer import Versionizer, api_version
+from fastapi_versionizer.versionizer import Versionizer
 
-from ugh_no.errors.constants import functional_errors
-from ugh_no.errors.custom_exception import UserException
-from ugh_no.service import load_rules_from_json
-from src.ugh_no.model.ugh_model import UghNoRequest, UghNoResponse
+from errors.constants import functional_errors
+from errors.custom_exception import UserException
+from app.routers.utility import load_rules_from_json
+from app.schemas.ugh_model import UghNoRequest, UghNoResponse
 
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # Get the folder where the current script is located
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Go to the model folder relative to this file
+# Go to the schemas folder relative to this file
 MODEL_PATH_USER_PROMPT = os.path.join(BASE_DIR, "..", "resources", "user_prompt.txt")
 MODEL_PATH_SYSTEM_PROMPT = os.path.join(BASE_DIR, "..", "resources", "system_prompt.txt")
 # Normalize the path for Linux
@@ -42,11 +43,11 @@ except JSONDecodeError as e:
 except Exception as e:
     logger.error(f"An error occurred: {str(e)}")
 
-app = FastAPI(title="Ugh No Endpoint", version="1.0.0")
+router = APIRouter(tags=["AI Generative"])
 
 
-@api_version(1)
-@app.post("/generate-response", response_model=UghNoResponse)
+#@api_version(1)
+@router.post("/generate-response", response_model=UghNoResponse)
 async def generate_response(request: UghNoRequest):
     # format the loaded `content` string using request attributes (placeholders like {name} in `user_prompt.txt`)
     logger.info("Request received with headers: ", request.dict())
@@ -123,11 +124,3 @@ def fallback_generate_response(request: UghNoRequest) -> UghNoResponse:
         return create_response_object(request, "I'm sorry, but I couldn't generate a response at this time.")
     else:
         return create_response_object(request, json_response_random.response)
-
-
-versions = Versionizer(app,
-                       prefix_format="v{major}",
-                       semantic_version_format="{major}",
-                       latest_prefix="latest",
-                       sort_routes=True
-                       ).versionize()

@@ -1,7 +1,7 @@
 # Functional Error Constants for UGH-NO Endpoint
 from enum import Enum
 
-from ugh_no.errors.error_definition import ErrorDefinition
+from errors.error_definition import ErrorDefinition
 
 
 class ErrorConstants(str, Enum):

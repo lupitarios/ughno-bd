@@ -1,4 +1,4 @@
-from ugh_no.errors.constants.functional_errors import ErrorDefinition
+from errors.constants.functional_errors import ErrorDefinition
 
 
 class UserException(Exception):

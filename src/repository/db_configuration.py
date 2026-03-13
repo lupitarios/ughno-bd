@@ -19,7 +19,9 @@ class DBConfiguration:
 
     def __init__(self):
         self. postgres_url = None
+        self.get_url_connection()
 
+    '''Singleton pattern implementation to ensure only one instance of DBConfiguration exists.'''
     def __new__(cls):
         if cls.instance is None:
             cls.instance = super().__new__(cls)
@@ -38,17 +40,27 @@ class DBConfiguration:
             logger.debug("PostgresSQL connection parameters loaded successfully.")
 
             self.postgres_url = f'postgresql://{user}:{password}@{host}:{port}/{database}'
-            logger.debug("PostgresSQL connection URL constructed successfully.")
+            logger.info(f"PostgresSQL connection URL constructed successfully -> {self.postgres_url}")
         except Exception as error:
-            logger.error("Error while connecting to PostgresSQL:", error)
+            logger.error(f"Error while connecting to PostgresSQL:{error}")
 
-    def db_connection(self):
-        if self.postgres_url is None:
-            self.get_url_connection()
-        return create_engine(self.postgres_url)
+    def create_engine(self):
+        try:
+            if self.postgres_url is None:
+                self.get_url_connection()
+            return create_engine(
+                self.postgres_url,
+                pool_size=10,
+                max_overflow=20,
+                pool_timeout=30,)
+        except Exception as error:
+            logger.error(f"Error while connecting to PostgresSQL:{error}" )
 
-    def db_session(self):
-        session = sessionmaker(bind=self.db_connection())
-        session =  session()
-        logger.debug("PostgresSQL session created successfully.")
-        return session
+    def get_db_session(self):
+        try:
+            session = sessionmaker(bind=self.create_engine(), autocommit=False, autoflush=False)
+            session =  session()
+            logger.debug("PostgresSQL session created successfully.")
+            return session
+        except Exception as error:
+            logger.error(f"Error while creating PostgresSQL session:{error}")

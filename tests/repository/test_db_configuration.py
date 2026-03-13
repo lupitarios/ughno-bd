@@ -1,8 +1,5 @@
 # python
-import os
-import types
-import pytest
-from src.ugh_no.repository.db import db_configuration
+from repository import db_configuration
 
 
 def setup_module(module):
@@ -17,7 +14,7 @@ def teardown_function(function):
 
 def test_get_url_connection_builds_expected_url(monkeypatch):
     # Arrange: set env vars and avoid loading any .env file
-    monkeypatch.setenv("POSTGRES_HOST", "db-host")
+    monkeypatch.setenv("POSTGRES_HOST", "models-host")
     monkeypatch.setenv("POSTGRES_DB", "mydb")
     monkeypatch.setenv("POSTGRES_USER", "dbuser")
     monkeypatch.setenv("POSTGRES_PASSWORD", "s3cr3t")
@@ -31,7 +28,7 @@ def test_get_url_connection_builds_expected_url(monkeypatch):
     cfg.get_url_connection()
 
     # Assert
-    expected = "postgresql://dbuser:s3cr3t@db-host:5433/mydb"
+    expected = "postgresql://dbuser:s3cr3t@models-host:5433/mydb"
     assert cfg.postgres_url == expected
 
 
@@ -56,7 +53,7 @@ def test_db_connection_uses_create_engine(monkeypatch):
     cfg = db_configuration.DBConfiguration()
 
     # Act
-    engine = cfg.db_connection()
+    engine = cfg.create_engine()
 
     # Assert
     assert engine == "FAKE_ENGINE"
@@ -89,7 +86,7 @@ def test_db_session_returns_session_from_sessionmaker(monkeypatch):
     cfg = db_configuration.DBConfiguration()
 
     # Act
-    session = cfg.db_session()
+    session = cfg.get_db_session()
 
     # Assert
     assert session is fake_session_obj
