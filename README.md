@@ -24,6 +24,7 @@ The architecture combines:
 - Postgress
 - Docker
 - SQLAlchemy
+- OAuth2
 
 > [!NOTE]
 > To avoid local installation from Postgress and configuration, I decided to use the Docker Postgress container.
