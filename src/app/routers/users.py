@@ -19,12 +19,12 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["users"] )
 user_service = UserServiceImpl(UserRepositoryImpl())
 
-@router.get("/users")
+@router.get("/users", dependencies=[Security(security.get_current_active_user, scopes=["user:read"])])
 def get_users()-> list[UghUserId] | None:
     logger.info('Get All Users')
     return user_service.get_all_users()
 
-@router.get("/users/{user_id}")
+@router.get("/users/{user_id}", dependencies=[Security(security.get_current_active_user, scopes=["user:read"])])
 def get_user(user_id: int)->UghUserId:
     logger.info(f"Get user with id {user_id}")
     user_found = user_service.get_user_by_id(user_id)
@@ -34,46 +34,43 @@ def get_user(user_id: int)->UghUserId:
         logger.info(f"User with id {user_id} not found")
         raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
 
-@router.post("/users")
+@router.post("/users", dependencies=[Security(security.get_current_active_user, scopes=["user:write"])])
 def create_user(request: UserPwd)->UserPwd:
-    print(f"Create a new user with request: {request}")
+    logger.debug(f"Create a new user with request: {request}")
     try:
         return user_service.create_user(request)
     except Exception as e:
-        print(f"Endpoint Error creating user: {e}")
+        logger.error(f"Error creating user: {e}")
         raise HTTPException(status_code=400, detail="An Error occurred creating user")
 
-@router.put("/users/{user_id}", dependencies=[Security(security.get_current_active_user)])
+@router.put("/users/{user_id}", dependencies=[Security(security.get_current_active_user, scopes=["user:write"])])
 def update_user(user_id: int, request: UghCreateUser)->UghUserId:
     logger.info(f"Update user with id {user_id}")
-    print(f"Endpoint Updating user with id {user_id} to new values: {request}")
     try:
         return user_service.update_user(user_id, request)
     except Exception as e:
         logger.error(f"Error updating user: {e}")
-        print("Error updating user:", e)
         raise HTTPException(status_code=400, detail="An Error occurred while updating user")
 
-@router.delete("/users/{user_id}", dependencies=[Security(security.get_current_active_user, scopes=["admin"])])
+@router.delete("/users/{user_id}", dependencies=[Security(security.get_current_active_user, scopes=["admin:delete"])])
 def delete_user(user_id: int) -> dict:
     logger.debug(f"Delete user with id {user_id}")
-    print("Endpoint Deleting user with id:", user_id)
     try:
         user_service.delete_user(user_id)
         return {"message": f"User with id {user_id} deleted successfully"}
     except Exception as e:
         logger.error(f"Error deleting user: {e}")
-        print("Fnt Error deleting user:", e)
         raise HTTPException(status_code=400, detail="An Error occurred deleting user")
 
-@router.post("/stoken")
+@router.post("/token")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> auth.Token:
     user_found_db = user_service.get_user_by_username(form_data.username)
-    print("User found in DB:", user_found_db)
+    logger.debug("User found in DB:", user_found_db)
     user = auth.authenticate_user(user_found_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     access_token_expires = timedelta(minutes=security.token_expire_minutes)
+
     access_token = auth.create_access_token(
         data={"sub": user.username, "scope": " ".join(form_data.scopes)},
         expires_delta=access_token_expires

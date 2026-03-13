@@ -52,9 +52,7 @@ class UserRepositoryImpl(IUserRepository):
         try:
             if not self.session.is_active:
                 self.session = DBConfiguration().get_db_session()
-            print("1 Repo get_by_username, username:", username)
             user_by_username = self.session.query(User).filter_by(username=username).first()
-            print("2 Repo get_by_username, user_by_username:", user_by_username)
             self.session.commit()
 
             user_converted_found =  UserPwd(
@@ -67,7 +65,6 @@ class UserRepositoryImpl(IUserRepository):
                 if user_by_username else None
 
             logger.info(f"Service user found: {user_converted_found}")
-            print("Repo get_by_username, user_converted_found:", user_converted_found)
             return user_converted_found
         except Exception as e:
             self.session.rollback()
@@ -104,16 +101,16 @@ class UserRepositoryImpl(IUserRepository):
         try:
             if not self.session.is_active:
                 self.session = DBConfiguration().get_db_session()
-            print("Repo Saving user:", user)
-            print(user.__repr__())
+            logger.debug("Repo Saving user:", user)
+
             self.session.add(user)
             self.session.commit()
-            print("User saved successfully.")
+            logger.debug("User saved successfully.")
         except Exception as e:
             self.session.rollback()
-            print(f"Error saving user, rolling back transaction. {e}")
+            logger.error(f"Error saving user, rolling back transaction. {e}")
         finally:
-            print("Closing session.")
+            logger.debug("Closing session.")
             if self.session.is_active:
                 self.session.close()
 

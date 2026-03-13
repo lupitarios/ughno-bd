@@ -1,17 +1,14 @@
 import os
-from typing import Annotated
 import uvicorn
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import ai_generative, users, auth
-from fastapi.security import OAuth2PasswordBearer
+from .routers import ai_generative, users
 app = FastAPI()
 
 app.include_router(users.router)
 app.include_router(ai_generative.router)
-app.include_router(auth.router)
 
 app.add_middleware(
     CORSMiddleware,

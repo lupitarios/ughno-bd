@@ -31,7 +31,7 @@ fake_users_db = {
         "disabled": True,
     },
 }
-
+'''
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -128,13 +128,16 @@ async def get_current_active_user(current_user: Annotated[User, Security(get_cur
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
-@router.post("/token")
+@router.post("/stoken")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
+    print("[Endpoint - token - fastapi] User login attempt with username:", form_data.username)
+    print("[Endpoint - token - fastapi] Form data received:", form_data)
 
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    print("[Endpoint - token] User authenticated successfully, creating access token with scopes:", form_data.scopes)
     access_token = create_access_token(
         data={"sub": user.username, "scope": " ".join(form_data.scopes)},
         expires_delta=access_token_expires
@@ -164,3 +167,5 @@ def delete_user(user_id: int) -> dict:
         print(f"Error deleting user: {e}")
         print("Fnt Error deleting user:", e)
         raise HTTPException(status_code=400, detail="An Error occurred deleting user")
+    
+    '''

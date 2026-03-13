@@ -25,17 +25,21 @@ class TokenData(BaseModel):
     scopes: list[str]  = []
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token",
-                                     scopes={"admin": "Admin privileges",
-                                             "user": "User privileges",
-                                             "read-only": "Read items."})
+                                     scopes={"admin:all": "Full Admin access",
+                                             "admin:delete": "Delete user information - Admin access",
+                                             "user:read": "Read user information.",
+                                             "user:write": "Create/Update user information."})
 
 load_dotenv()
 logger.info("Environment variables loaded successfully.")
 secret_key = os.getenv("SECRET_KEY")
 algorithm = os.getenv("ALGORITHM")
 token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+if(token_expire_minutes):
+    token_expire_minutes = int(token_expire_minutes)
+else:
+    token_expire_minutes = 0
 dummy_password = os.getenv("DUMMY_PASSWORD")
-print("ENV algorithm:", algorithm)
 
 password_hash = PasswordHash.recommended()
 DUMMY_HASH = password_hash.hash(dummy_password)
@@ -47,8 +51,7 @@ def get_password_hash(password):
     return password_hash.hash(password)
 
 def authenticate_user(user_in_db, username: str, password: str):
-    logger.info(f"Authenticate_user Username: {username}")
-    logger.info(f"User found: {user_in_db}")
+    logger.debug(f"Authenticate_user Username: {username}")
     if not user_in_db:
         # To mitigate timing attacks, we verify the password against a dummy hash even if the user doesn't exist.
         verify_password(password, DUMMY_HASH)
@@ -59,7 +62,6 @@ def authenticate_user(user_in_db, username: str, password: str):
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    logger.info(f"create_access_token: {data}")
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -71,7 +73,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 async def get_current_user(security_scopes: SecurityScopes, token: Annotated[str, Depends(oauth2_scheme)]):
         logger.info("get_current_user called with token: %s and security scopes: %s", token, security_scopes.scopes)
-        print("get_current_user called with token: %s and security scopes: %s", token, security_scopes.scopes)
         if security_scopes.scopes:
             authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
         else:
@@ -84,12 +85,10 @@ async def get_current_user(security_scopes: SecurityScopes, token: Annotated[str
 
         try:
             payload = jwt.decode(token, secret_key, algorithms=[algorithm])
-            print("Decoded JWT payload:", payload)
             username: str = payload.get("sub")
             if username is None:
                 raise credentials_exception
             scope: str = payload.get("scope", "")
-            print("Scope from JWT payload:", scope)
             token_scopes = scope.split(" ")
             token_data = TokenData(scopes=token_scopes, username=username)
         except (InvalidTokenError, ValidationError):
@@ -97,10 +96,9 @@ async def get_current_user(security_scopes: SecurityScopes, token: Annotated[str
 
         user_repository = UserRepositoryImpl()
         user = user_repository.get_by_username(username=token_data.username)
-        print("User retrieved from database:", user)
         if user is None:
             raise credentials_exception
-        for scope in security_scopes:
+        for scope in security_scopes.scopes:
             if scope not in token_data.scopes:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -109,8 +107,8 @@ async def get_current_user(security_scopes: SecurityScopes, token: Annotated[str
                 )
         return user
 
-async def get_current_active_user(current_user: Annotated[UghUserId, Security(get_current_user, scopes=["user"])]):
-        logger.info(f"get_current_active_user: {current_user}")
+async def get_current_active_user(current_user: Annotated[UghUserId, Security(get_current_user)]):
+        logger.debug(f"get_current_active_user: {current_user}")
         if current_user.disabled:
             raise HTTPException(status_code=400, detail="Inactive user")
         return current_user
